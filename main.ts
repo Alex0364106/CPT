@@ -374,17 +374,14 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         scene.cameraShake(2, 200)
         if (level == 0) {
             info.changeScoreBy(1)
-            info.changeCountdownBy(1)
         } else if (level == 1) {
             info.changeScoreBy(2)
-            info.changeCountdownBy(0.75)
         } else if (level == 2) {
             info.changeScoreBy(3)
-            info.changeCountdownBy(0.5)
         } else {
             info.changeScoreBy(4)
-            info.changeCountdownBy(0.25)
         }
+        info.changeCountdownBy(0.5)
     }
 })
 function Select (list: Image[]) {
@@ -793,7 +790,7 @@ level = 0
 tiles.setCurrentTilemap(map_list[level])
 controller.moveSprite(hammer, 175, 175)
 info.setScore(0)
-info.startCountdown(6)
+info.startCountdown(5)
 enemies = sprites.create(enemy_list._pickRandom(), SpriteKind.Enemy)
 game.setGameOverMessage(true, "Thanks for Playing!!!")
 game.setGameOverEffect(true, effects.confetti)
