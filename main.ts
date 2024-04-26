@@ -1,4 +1,7 @@
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    // Animate depends on the user's choice
+    // <-
+    // 
     if (chose == 1) {
         animation.runImageAnimation(
         hammer,
@@ -368,10 +371,13 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         false
         )
     }
+    // When the user hit the enemy
     if (hammer.overlapsWith(enemies)) {
         tiles.placeOnRandomTile(enemies, assets.tile`myTile`)
         enemies.setImage(enemy_list._pickRandom())
         scene.cameraShake(2, 200)
+        music.play(music.createSoundEffect(WaveShape.Square, 200, 1, 255, 0, 100, SoundExpressionEffect.None, InterpolationCurve.Curve), music.PlaybackMode.UntilDone)
+        // Change score based on the levels
         if (level == 0) {
             info.changeScoreBy(1)
         } else if (level == 1) {
@@ -384,6 +390,9 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         info.changeCountdownBy(0.5)
     }
 })
+// Loop through all the value in a sprite list, in this case, hammer. 
+// 
+// Then select which hammer will be used based on the user-input. Return the user's choice for later use
 function Select (list: Image[]) {
     game.splash("Select your Hammer")
     for (let value of list) {
@@ -406,6 +415,12 @@ function Select (list: Image[]) {
     }
     return chose
 }
+// Whenever the countdown ends, change the variable "level" by 1. 
+// 
+// If level 1-3, call Next
+// If level = 4, win
+// 
+// If does not meet the requirements, lose.
 info.onCountdownEnd(function () {
     level += 1
     if (level == 1 && info.score() >= 4) {
@@ -420,6 +435,7 @@ info.onCountdownEnd(function () {
         game.gameOver(false)
     }
 })
+// Lists of enemy sprite
 function enemy_lists () {
     enemy_list = [
     img`
@@ -522,6 +538,7 @@ function enemy_lists () {
         `
     ]
 }
+// Tile maps & levels
 function maps () {
     map_list = [
     tilemap`level2`,
@@ -530,6 +547,8 @@ function maps () {
     tilemap`level5`
     ]
 }
+// Function for moving on the next level/quit the game
+// Used in <-
 function Next () {
     ask = game.ask("Next?")
     if (ask) {
@@ -539,6 +558,7 @@ function Next () {
         game.gameOver(true)
     }
 }
+// Hammer sprites
 function hammer_lists () {
     hammer_list = [
     img`
@@ -619,10 +639,11 @@ let ask = false
 let chose = 0
 let enemy_list: Image[] = []
 let map_list: tiles.TileMapData[] = []
-let level = 0
 let hammer_list: Image[] = []
-let enemies: Sprite = null
 let hammer: Sprite = null
+let enemies: Sprite = null
+let level = 0
+level = 0
 scene.setBackgroundImage(img`
     8888866666666666666666666666666666666668866668866668866666668888866666666666666666666666666666666668866666888866688688888666666666666666666666666666666666688666
     6668888866666666666666666666666666666888666688886666886666666668888866666666666666666666666666666888666688888666886666688888666666666666666666666666666668886666
@@ -748,24 +769,6 @@ scene.setBackgroundImage(img`
 enemy_lists()
 hammer_lists()
 maps()
-hammer = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `, SpriteKind.Player)
 enemies = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -784,17 +787,35 @@ enemies = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Enemy)
+hammer = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Player)
 Select(hammer_list)
 scene.cameraFollowSprite(hammer)
-level = 0
 tiles.setCurrentTilemap(map_list[level])
+enemies = sprites.create(enemy_list._pickRandom(), SpriteKind.Enemy)
 controller.moveSprite(hammer, 175, 175)
 info.setScore(0)
 info.startCountdown(5)
-enemies = sprites.create(enemy_list._pickRandom(), SpriteKind.Enemy)
 game.setGameOverMessage(true, "Thanks for Playing!!!")
 game.setGameOverEffect(true, effects.confetti)
 game.setGameOverScoringType(game.ScoringType.HighScore)
+// Move enemy on a random hole every 3 seconds
 game.onUpdateInterval(3000, function () {
     tiles.placeOnRandomTile(enemies, assets.tile`myTile`)
     enemies.setImage(enemy_list._pickRandom())
