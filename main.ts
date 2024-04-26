@@ -401,14 +401,8 @@ function Select (list: Image[]) {
     }
     sprites.destroy(hammer, effects.spray, 500)
     chose = game.askForNumber("1-4", 1)
-    if (chose == 1) {
-        hammer = sprites.create(hammer_list[0], SpriteKind.Player)
-    } else if (chose == 2) {
-        hammer = sprites.create(hammer_list[1], SpriteKind.Player)
-    } else if (chose == 3) {
-        hammer = sprites.create(hammer_list[2], SpriteKind.Player)
-    } else if (chose == 4) {
-        hammer = sprites.create(hammer_list[3], SpriteKind.Player)
+    if (chose == 1 || (chose == 2 || (chose == 3 || chose == 4))) {
+        hammer = sprites.create(hammer_list[chose - 1], SpriteKind.Player)
     } else {
         game.splash("Wrong Number")
         game.reset()
